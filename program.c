@@ -58,3 +58,109 @@ void *readerscode(void *ptr){
         }
         pthread_mutex_unlock(&mut_ex);
 }
+
+void main()
+{
+        printf("Insert the Initial value of Shared variable: \n");
+        scanf("%d", &shared);
+        printf("\n\n");
+        int rdr, wtr, i;
+        printf("Kindly Insert the number of valid Readers :\t\n");
+        scanf("%d", &rdr);
+        for(i=0; i<rdr; i++)
+        {
+                printf("Reader%d\n", i);
+        }
+        printf("\n\n");
+        printf("Kindly Insert the number of valid Writers:\t\n");
+        scanf("%d", &wtr);
+        for(i=0; i<wtr; i++)
+        {
+                printf("Writer%d\n", i);
+        }
+        printf("\n\n");
+
+        pthread_t rd[rdr], wr[wtr];
+        pthread_mutex_init(&writer_value, NULL);
+        pthread_mutex_init(&mut_ex, NULL);
+
+        if(rdr<0 || wtr<0)
+        {
+                printf("Invalid Input..! You have Inserted -ve number of Reader/Writer\n");
+                printf("The Program is going to Terminate__!!\n");
+                return;
+        }
+        else if(rdr == 0)
+        {
+                printf("Please take atleast One Reader # \n");
+                printf("> Reader thread will not be created !\n");
+        }
+        else if(wtr == 0)
+        {
+                printf("Please take atleast One Writer # \n");
+                printf("> Writer thread will not be created !\n");
+        }
+        else
+        {
+                printf("|----< Started Thread creation >----|\n");
+        }
+        printf("\n");
+
+        if(wtr==rdr)
+        {
+                for(i=0; i<wtr; i++)
+                {
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                }
+                for(i=0; i<wtr; i++)
+                {
+                        pthread_join(wr[i], NULL);
+                        pthread_join(rd[i], NULL);
+                }
+        }
+        else if(wtr>rdr)
+        {
+                for(i=0; i<rdr; i++)
+                {
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                }
+                for(i=rdr; i<wtr; i++)
+                {
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
+                }
+                for(i=0; i<rdr; i++)
+                {
+                        pthread_join(wr[i], NULL);
+                        pthread_join(rd[i], NULL);
+                }
+                for(i=rdr; i<wtr; i++)
+                {
+                        pthread_join(wr[i], NULL);
+                }
+        }
+        else
+        {
+                for(i=0; i<wtr; i++)
+                {
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                }
+                for(i=wtr; i<rdr; i++)
+                {
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                }
+                for(i=0; i<wtr; i++)
+                {
+                        pthread_join(wr[i], NULL);
+                        pthread_join(rd[i], NULL);
+                }
+                for(i=wtr; i<rdr; i++)
+                {
+                        pthread_join(rd[i], NULL);
+                }
+        }
+        printf("\n\tThreads Joined\n\n");
+        printf("The Final updated value of shared variable = %d\n", shared);
+}
