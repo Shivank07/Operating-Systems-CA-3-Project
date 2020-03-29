@@ -15,10 +15,10 @@ void *readerscode(void *ptr)
         {
                 pthread_mutex_lock(&writer_value);      //No writer can come inside
         }
-        pthread_mutex_unlock(&mut_ex);                  //Now next reader can come inside i.e, mutex value is unlocked 
+        pthread_mutex_unlock(&mut_ex);                  //Now next reader can come inside i.e,mutex object released
         //Exit Sction
         int x = rand() % 10;            //random value of x is generated
-        int m = ((int)ptr);             
+        int m = ((int)(intptr_t)ptr);             
         printf("Reader%d waits for Random time (0 to 10ns) = %d\n", m, x);
         sleep(x);                                //process sleeps for random time x
         printf("Insert the number of times Reader%d want to read:\n", m);
@@ -31,21 +31,21 @@ void *readerscode(void *ptr)
                 printf("Reader%d reads the shared value as %d\n", m, shared);
         }
         printf("The number of Readers present = %d\n", reader_count);
-        pthread_mutex_lock(&mut_ex);            //mutex locked
+        pthread_mutex_lock(&mut_ex);            //mutex object locked
         reader_count--;
         if(reader_count==0)
         {
         //Writers can now come inside if they want
                 pthread_mutex_unlock(&writer_value);
         }
-        pthread_mutex_unlock(&mut_ex);          //mutex unlocked
+        pthread_mutex_unlock(&mut_ex);          //release the mutex object
 }
 
 void *writerscode(void *ptr)
 {
         pthread_mutex_lock(&writer_value);       //using writer_value as mutex_lock
         int x = rand() % 10;                    //rand() is used to generate random variable
-        int m = ((int)ptr);
+        int m = ((int)(intptr_t)ptr);
         printf("\n\n");
         printf("Writer%d waits for Random time (0 to 10ns) = %d\n", m, x);
         sleep(x);                               //process/thread sleeps for x time
@@ -63,7 +63,7 @@ void *writerscode(void *ptr)
         }
         printf("Updated value of Shared variable = %d \n", shared);     //updated value of shared value gets printed
         printf("\n");
-        pthread_mutex_unlock(&writer_value);                    //mutex unlock value
+        pthread_mutex_unlock(&writer_value);                    //release the mutex object
 }
 
 void main()
@@ -117,8 +117,8 @@ void main()
         {
                 for(i=0; i<wtr; i++)
                 {
-                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
-                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)(intptr_t)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)(intptr_t)i);
                 }
                 for(i=0; i<wtr; i++)
                 {
@@ -130,12 +130,12 @@ void main()
         {
                 for(i=0; i<rdr; i++)
                 {
-                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
-                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)(intptr_t)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)(intptr_t)i);
                 }
                 for(i=rdr; i<wtr; i++)
                 {
-                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)(intptr_t)i);
                 }
                 for(i=0; i<rdr; i++)
                 {
@@ -151,12 +151,12 @@ void main()
         {
                 for(i=0; i<wtr; i++)
                 {
-                        pthread_create(&wr[i], NULL, &writerscode, (int *)i);
-                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                        pthread_create(&wr[i], NULL, &writerscode, (int *)(intptr_t)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)(intptr_t)i);
                 }
                 for(i=wtr; i<rdr; i++)
                 {
-                        pthread_create(&rd[i], NULL, &readerscode, (int *)i);
+                        pthread_create(&rd[i], NULL, &readerscode, (int *)(intptr_t)i);
                 }
                 for(i=0; i<wtr; i++)
                 {
