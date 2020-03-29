@@ -1,0 +1,14 @@
+It is an OS code written in C language.
+
+Compile and Run as normal in any compiler not using terminal.
+
+Steps to Run the code in LINUX terminal
+  >Make a file as filename.c by Nano or any other editer
+  >Use -lpthread OR -pthread at compile time.
+    gcc filename.c -lpthread
+      OR
+    gcc -pthread filename.c
+  >./a.out               {to execute}
+  >Give set of inputs. {While giving Inputs, it'll wait for some time(0-10ns) because of sleep function.
+    Enter when it asks to enter.}
+ 
